@@ -53,7 +53,10 @@ class StocksController extends AppController
         $stock = $this->Stocks->get($id);
         if ($this->request->is(['post', 'put']))
         {
+            $oldQuantity = $stock->quantity;
             $this->Stocks->patchEntity($stock, $this->request->data);
+            $stock->quantity = $oldQuantity - $stock->quantity;
+
             if ($this->Stocks->save($stock))
             {
                 $this->Flash->success(__('出庫しました'));    
@@ -66,11 +69,47 @@ class StocksController extends AppController
         $this->redirect(['action' => 'issue']);
     }
     
-    /*
     public function recipe()
     {
-        $stocks = $this->Stocks->find('all');
-        $this->set(compact('stocks'));
+        $ingredients = array();
+        for ($i = 0; $i < 3; $i++)
+        {
+            $ingredients[] = array(
+                'item_name' => '',
+                'volume' => 0);
+        }
+    
+        if ($this->request->is('post'))
+        {
+            $inStocks = array();
+            
+            $ingredients = $this->request->data['ingredients'];
+            foreach ($ingredients as $ingredient)
+            {
+                $stocks = $this->Stocks->find('all', array(
+                    'conditions' => array('item_name' => $ingredient['item_name']),
+                    'order' => array('volume DESC', 'registered_at DESC'),
+                ));
+                $needsVolume = (int)$ingredient['volume'];
+                $inStock = false;
+                foreach ($stocks as $stock)
+                {
+                    $needsQuantity = $needsVolume / $stock->volume;
+                    //在庫あり
+                    if ($stock->quantity > $needsQuantity)
+                    {
+                        $needsVolume = $needsVolume - ($needsQuantity * $stock->volume);            
+                    }
+                    if ($needsVolume <= 0)
+                    {
+                        $inStock = true;
+                        break;    
+                    }
+                }
+                $inStocks[] = $inStock;
+            }
+            $this->set('inStocks', $inStocks);
+        }
+        $this->set('ingredients', $ingredients);
     }
-    */
 }

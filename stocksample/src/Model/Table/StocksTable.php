@@ -11,4 +11,18 @@ class StocksTable extends Table
         $this->addBehavior('Timestamp');    
     }
     
+    /*
+    public function validationDefault(Validator $validator)
+    {
+        $validator
+            ->notEmpty('item_name')
+            ->notEmpty('volume')
+            ->notEmpty('unit')
+            ->notEmpty('quantity')
+            ->notEmpty('registered_at');
+
+        return $validator;
+    }
+    */
+    
 }

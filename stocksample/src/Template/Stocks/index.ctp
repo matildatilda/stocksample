@@ -6,7 +6,12 @@
     </tr>    
     <?php foreach ($stocks as $stock): ?>
     <tr>
-        <td><?= $stock->item_name; ?></td>
+        <td>
+            <?php if ($stock->quantity < 0): ?>
+            <?= "＊" ?>
+            <?php endif; ?>
+            <?= $stock->item_name; ?>
+        </td>
         <td><?= $stock->volume; ?></td>
         <td><?= $stock->unit; ?></td>
         <td><?= $stock->quantity; ?></td>
